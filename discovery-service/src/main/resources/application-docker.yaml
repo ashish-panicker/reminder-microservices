@@ -1,12 +1,9 @@
-spring:
-  application:
-    name: registry-service
 server:
   port: 8761
 # Eureka server properties
 eureka:
   instance:
-    hostname: localhost
+    hostname: discovery-server
     prefer-ip-address: true
   client:
     register-with-eureka: false

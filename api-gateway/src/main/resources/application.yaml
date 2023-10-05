@@ -1,0 +1,44 @@
+server:
+  port: 8080
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/ # URL of the Eureka server
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters: # Default filters applied to all routes
+        - DedupeResponseHeader=Access-Control-Allow-Origin # Remove duplicate headers
+      routes:
+        - id: user-service # ID of the route
+          uri: lb://user-service # URI of the route
+          predicates: # Predicates to match the route
+              - Path=/api/v1/users/** # Match the route if the path starts with /users/
+              - Method=GET,POST,PUT,DELETE,OPTIONS # Match the route if the method is GET, POST, PUT, DELETE or OPTIONS
+        - id: product-service
+          uri: lb://task-service
+          predicates:
+              - Path=/api/v1/tasks/**
+              - Method=GET,POST,PUT,DELETE,OPTIONS
+        - id: eureka-service
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/ # Set the path to / for the route
+        - id: eureka-service-static
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/**
+logging:
+  level:
+    root: warn
+    org.springframework.cloud.gateway.route.RouteDefinitionRouteLocator: debug
+    org.springframework.cloud.gateway.handler.FilteringWebHandler: debug
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: debug
+    org.springframework.cloud.gateway: trace

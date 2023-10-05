@@ -2,8 +2,8 @@ spring:
   application:
     name: user-service
   datasource:
-    url: jdbc:mysql://localhost:3306/tasks_users?createDatabaseIfNotExist=true
-    username: root
+    url: jdbc:mysql://mysql:3306/tasks_users?createDatabaseIfNotExist=true
+    username: task_user
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL driver
   jpa:
@@ -15,11 +15,11 @@ server:
   port: 9000
 eureka:
   instance:
-    hostname: localhost
+    hostname: discovery-server
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/ # URL of the Eureka server
+      defaultZone: http://discovery-server:8761/eureka/ # URL of the Eureka server
 logging:
   level:
     root: info # Logging level of the application

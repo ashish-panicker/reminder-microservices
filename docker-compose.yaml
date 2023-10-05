@@ -1,0 +1,78 @@
+version: '3.1'
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - ./data/mongo-data:/data/db
+  mysql:
+    container_name: mysql
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - ./data/mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: tasks_users
+      MYSQL_USER: task_user
+      MYSQL_PASSWORD: password
+  discovery-server:
+    container_name: discovery-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: ./discovery-service
+    restart: always
+    ports:
+      - "8761:8761"
+    expose:
+      - "8761"
+  gateway-server:
+    container_name: gateway-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: ./api-gateway
+    restart: always
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    depends_on:
+      - discovery-server
+  user-service:
+    container_name: user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: ./user-service
+    restart: always
+    ports:
+      - "9000:9000"
+    expose:
+      - "9000"
+    depends_on:
+      - mysql
+      - discovery-server
+      - gateway-server
+  task-service:
+    container_name: task-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    build: ./task-service
+    restart: always
+    ports:
+      - "9100:9100"
+    expose:
+      - "9100"
+    depends_on:
+      - mongo
+      - discovery-server
+      - gateway-server

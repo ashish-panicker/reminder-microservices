@@ -1,20 +1,18 @@
 server:
   port: 9100
 spring:
-  application:
-    name: task-service
   data:
     mongodb:
-      host: localhost
+      host: mongo
       port: 27017
       database: tasks_db
 eureka:
   instance:
-    hostname: localhost
+    hostname: discovery-server # Hostname of the application
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/ # URL of the Eureka server
+      defaultZone: http://discovery-server:8761/eureka/ # URL of the Eureka server
 logging:
   level:
     root: info # Logging level of the application
